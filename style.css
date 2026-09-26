@@ -1,0 +1,253 @@
+:root {
+    --primary-color: #4a90e2;
+    --secondary-color: #f5a623;
+    --bg-color: #f0f2f5;
+    --text-color: #333;
+    --screen-bg: #ffffff;
+    --error-color: #e74c3c;
+    --success-color: #2ecc71;
+    --transition-speed: 0.3s;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+#app {
+    width: 100%;
+    max-width: 500px;
+    padding: 20px;
+    text-align: center;
+}
+
+.screen {
+    background: var(--screen-bg);
+    padding: 40px 20px;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    display: none; /* Hidden by default */
+    flex-direction: column;
+    gap: 20px;
+    animation: fadeIn var(--transition-speed) ease;
+}
+
+.screen.visible {
+    display: flex;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+h1 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    color: var(--primary-color);
+}
+
+h2 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+/* Input Styles */
+.input-group {
+    width: 100%;
+}
+
+input[type="text"],
+input[type="number"] {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 1.2rem;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus {
+    border-color: var(--primary-color);
+}
+
+#answer-input {
+    font-size: 2rem;
+    text-align: center;
+}
+
+/* Button Styles */
+button {
+    padding: 12px 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+    background-color: var(--primary-color);
+    color: white;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+.level-selection {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #eee;
+}
+
+.level-selection p {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.level-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+}
+
+.mode-btn, .filter-btn, .level-btn {
+    background-color: #eee;
+    color: var(--text-color);
+}
+
+.mode-btn.active, .filter-btn.active, .level-btn.active {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* Keyboard Styles */
+.keyboard {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.key {
+    padding: 15px;
+    font-size: 1.5rem;
+    background-color: #eee;
+    color: var(--text-color);
+    border: none;
+    border-radius: 8px;
+}
+
+.key:active {
+    background-color: #ddd;
+}
+
+.key.special {
+    background-color: #f8f9fa;
+    font-size: 1.2rem;
+    color: var(--error-color);
+}
+
+/* Game Specific */
+#question-display {
+    font-size: 4rem;
+    font-weight: bold;
+    margin: 20px 0;
+}
+
+.game-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+/* Countdown */
+#countdown-display {
+    font-size: 6rem;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+/* Results */
+.result-stats {
+    font-size: 1.5rem;
+}
+
+#new-record-msg {
+    color: var(--success-color);
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.hidden {
+    display: none;
+}
+
+/* Leaderboard */
+.leaderboard-filters {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.filter-btn {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+}
+
+#leaderboard-list {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.leaderboard-entry {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.leaderboard-entry:last-child {
+    border-bottom: none;
+}
+
+.leaderboard-entry .rank {
+    font-weight: bold;
+    width: 30px;
+}
+
+.leaderboard-entry .name {
+    flex-grow: 1;
+}
+
+.leaderboard-entry .score {
+    font-weight: bold;
+}
+
+/* Responsive */
+@media (max-width: 400px) {
+    h1 { font-size: 1.5rem; }
+    #question-display { font-size: 3rem; }
+    .screen { padding: 30px 15px; }
+}

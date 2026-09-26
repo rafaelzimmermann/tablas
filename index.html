@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multiplication Speed Math</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Start Screen -->
+        <section id="start-screen" class="screen visible">
+            <h1>Multiplication Speed Math</h1>
+            <div class="input-group">
+                <input type="text" id="username-input" placeholder="Enter your name" maxlength="15">
+            </div>
+            <div class="mode-selection">
+                <button class="mode-btn" data-mode="bullet">Bullet (30s)</button>
+                <button class="mode-btn" data-mode="blitz">Blitz (60s)</button>
+                <button class="mode-btn" data-mode="rapid">Rapid (120s)</button>
+            </div>
+            <div class="level-selection">
+                <p>Select Difficulty:</p>
+                <div class="level-buttons">
+                    <button class="level-btn active" data-level="1">Level 1 (1-9)</button>
+                    <button class="level-btn" data-level="2">Level 2 (1-99)</button>
+                    <button class="level-btn" data-level="3">Level 3 (1-999)</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Countdown Screen -->
+        <section id="countdown-screen" class="screen">
+            <div id="countdown-display">3</div>
+        </section>
+
+        <!-- Game Screen -->
+        <section id="game-screen" class="screen">
+            <div class="game-header">
+                <div id="timer-display">Time: 30s</div>
+                <div id="score-display">Score: 0</div>
+            </div>
+            <div id="question-display">5 × 5</div>
+            <input type="number" id="answer-input" pattern="\d*" inputmode="numeric">
+
+            <!-- Number Keyboard for Mouse/Touch users -->
+            <div id="number-keyboard" class="keyboard">
+                <button class="key" data-key="1">1</button>
+                <button class="key" data-key="2">2</button>
+                <button class="key" data-key="3">3</button>
+                <button class="key" data-key="4">4</button>
+                <button class="key" data-key="5">5</button>
+                <button class="key" data-key="6">6</button>
+                <button class="key" data-key="7">7</button>
+                <button class="key" data-key="8">8</button>
+                <button class="key" data-key="9">9</button>
+                <button class="key special" data-key="Backspace">⌫</button>
+                <button class="key" data-key="0">0</button>
+                <button class="key special" data-key="Clear">C</button>
+            </div>
+        </section>
+
+        <!-- Results Screen -->
+        <section id="results-screen" class="screen">
+            <h2>Game Over!</h2>
+            <div class="result-stats">
+                <p>Score: <span id="final-score">0</span></p>
+                <p id="new-record-msg" class="hidden">🎉 New Personal Record!</p>
+            </div>
+            <button id="restart-btn">Play Again</button>
+            <button id="leaderboard-btn">View Leaderboard</button>
+        </section>
+
+        <!-- Leaderboard Screen -->
+        <section id="leaderboard-screen" class="screen">
+            <h2>Leaderboard</h2>
+            <div class="leaderboard-filters">
+                <button class="filter-btn active" data-mode="bullet">Bullet</button>
+                <button class="filter-btn" data-mode="blitz">Blitz</button>
+                <button class="filter-btn" data-mode="rapid">Rapid</button>
+            </div>
+            <div id="leaderboard-list">
+                <!-- Leaderboard entries will be injected here -->
+            </div>
+            <button id="back-to-start-btn">Back to Start</button>
+        </section>
+    </div>
+
+    <script type="module" src="src/main.js"></script>
+</body>
+</html>
