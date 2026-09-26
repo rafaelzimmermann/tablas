@@ -4,6 +4,54 @@ import { getUser, saveUser, saveScore, getLeaderboard } from './data.js';
 import { MultiplicationGenerator } from './generator.js';
 import { Timer, TIMER_MODES } from './timer.js';
 
+// --- Translations ---
+const TRANSLATIONS = {
+    en: {
+        title: 'Multiplication Speed Math',
+        'name-placeholder': 'Enter your name',
+        'difficulty-label': 'Select Difficulty:',
+        'level1': 'Level 1 (1-9)',
+        'level2': 'Level 2 (1-99)',
+        'level3': 'Level 3 (1-999)',
+        'bullet': 'Bullet (30s)',
+        'blitz': 'Blitz (60s)',
+        'rapid': 'Rapid (120s)',
+        'time-prefix': 'Time: ',
+        'score-prefix': 'Score: ',
+        'game-over': 'Game Over!',
+        'score-label': 'Score',
+        'new-record': '🎉 New Personal Record!',
+        'restart': 'Play Again',
+        'leaderboard': 'View Leaderboard',
+        'leaderboard-title': 'Leaderboard',
+        'back': 'Back to Start',
+        'no-scores': 'No scores yet!',
+        'alert-name': 'Please enter your name to start playing!'
+    },
+    es: {
+        title: 'Matemáticas de Velocidad: Multiplicación',
+        'name-placeholder': 'Introduce tu nombre',
+        'difficulty-label': 'Selecciona Dificultad:',
+        'level1': 'Nivel 1 (1-9)',
+        'level2': 'Nivel 2 (1-99)',
+        'level3': 'Nivel 3 (1-999)',
+        'bullet': 'Bala (30s)',
+        'blitz': 'Blitz (60s)',
+        'rapid': 'Rápido (120s)',
+        'time-prefix': 'Tiempo: ',
+        'score-prefix': 'Puntuación: ',
+        'game-over': '¡Fin del juego!',
+        'score-label': 'Puntos',
+        'new-record': '🎉 ¡Nuevo récord personal!',
+        'restart': 'Jugar de nuevo',
+        'leaderboard': 'Ver clasificación',
+        'leaderboard-title': 'Clasificación',
+        'back': 'Volver al inicio',
+        'no-scores': '¡Aún no hay puntuaciones!',
+        'alert-name': '¡Por favor, introduce tu nombre para empezar!'
+    }
+};
+
 // DOM Elements
 const screens = {
     start: document.getElementById('start-screen'),
@@ -14,6 +62,7 @@ const screens = {
 };
 
 const usernameInput = document.getElementById('username-input');
+const langBtns = document.querySelectorAll('.lang-btn');
 const modeBtns = document.querySelectorAll('.mode-btn');
 const levelBtns = document.querySelectorAll('.level-btn');
 const countdownDisplay = document.getElementById('countdown-display');
@@ -31,16 +80,61 @@ const leaderboardList = document.getElementById('leaderboard-list');
 const backToStartBtn = document.getElementById('back-to-start-btn');
 
 // State
+let currentLanguage = 'en';
 let currentUser = null;
-let currentMode = null; // 'bullet', 'blitz', or 'rapid'
-let currentLevel = 1; // 1, 2, or 3
+let currentMode = null; 
+let currentLevel = 1; 
 let score = 0;
 let generator = null;
 let timer = null;
 
 /**
+ * Applies current translations to the DOM.
+ */
+function applyTranslations() {
+    const t = TRANSLATIONS[currentLanguage];
+
+    // Text content translations
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.dataset.i18n;
+        if (t[key]) el.textContent = t[key];
+    });
+
+    // Placeholder translations
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.dataset.i18nPlaceholder;
+        if (t[key]) el.placeholder = t[key];
+    });
+
+    // Mode button translations
+    document.querySelectorAll('[data-i18n-mode]').forEach(el => {
+        const key = el.dataset.i18nMode;
+        if (t[key]) el.textContent = t[key];
+    });
+
+    // Level button translations
+    document.querySelectorAll('[data-i18n-level]').forEach(el => {
+        const key = el.dataset.i18nLevel;
+        if (t[key]) el.textContent = t[key];
+    });
+
+    // Prefixes (Time, Score)
+    document.querySelectorAll('[data-i18n-prefix]').forEach(el => {
+        const key = el.dataset.i18nPrefix;
+        const prefix = t[key];
+        // We need to preserve the numeric part if it's already there
+        // In our case, they are updated via script, so we just store the prefix 
+        // and re-apply it when the numeric value changes.
+        el.dataset.currentPrefix = prefix;
+    });
+
+    // Update existing displays with new prefixes
+    updateTimerDisplay();
+    updateScoreDisplay();
+}
+
+/**
  * Switches the visible screen.
- * @param {string} screenId 
  */
 function showScreen(screenId) {
     Object.values(screens).forEach(screen => screen.classList.remove('visible'));
@@ -49,14 +143,17 @@ function showScreen(screenId) {
 
 /**
  * Renders the leaderboard for a given mode.
- * @param {string} mode 
  */
 function renderLeaderboard(mode) {
     const entries = getLeaderboard(mode);
     leaderboardList.innerHTML = '';
 
     if (entries.length === 0) {
-        leaderboardList.innerHTML = '<p style="text-align:center; padding: 20px;">No scores yet!</p>';
+        const p = document.createElement('p');
+        p.style.textAlign = 'center';
+        p.style.padding = '20px';
+        p.textContent = TRANSLATIONS[currentLanguage]['no-scores'];
+        leaderboardList.appendChild(p);
         return;
     }
 
@@ -96,20 +193,20 @@ function startCountdown() {
  */
 function startGame() {
     score = 0;
-    scoreDisplay.textContent = `Score: ${score}`;
+    updateScoreDisplay();
     
     const modeKey = currentMode.toUpperCase();
     const modeConfig = TIMER_MODES[modeKey];
     
-    const maxFactors = { 1: 9, 2: 99, 3: 999 };
-    const maxFactor = maxFactors[currentLevel];
-
-    timerDisplay.textContent = `Time: ${modeConfig.duration}s`;
+    updateTimerDisplay(modeConfig.duration);
     
-    generator = new MultiplicationGenerator(maxFactor);
+    generator = new MultiplicationGenerator(
+        { 1: 9, 2: 99, 3: 999 }[currentLevel]
+    );
+    
     timer = new Timer(
         (timeLeft) => {
-            timerDisplay.textContent = `Time: ${timeLeft}s`;
+            updateTimerDisplay(timeLeft);
         },
         () => {
             endGame();
@@ -119,15 +216,20 @@ function startGame() {
     showScreen('game');
     nextQuestion();
     
-    // Ensure input is focused
     setTimeout(() => answerInput.focus(), 10);
-    
     timer.start(modeConfig.duration);
 }
 
-/**
- * Generates the next question and updates the UI.
- */
+function updateTimerDisplay(timeLeft) {
+    const prefix = timerDisplay.dataset.currentPrefix || TRANSLATIONS[currentLanguage]['time-prefix'];
+    timerDisplay.textContent = `${prefix}${timeLeft}s`;
+}
+
+function updateScoreDisplay() {
+    const prefix = scoreDisplay.dataset.currentPrefix || TRANSLATIONS[currentLanguage]['score-prefix'];
+    scoreDisplay.textContent = `${prefix}${score}`;
+}
+
 function nextQuestion() {
     const { a, b, answer } = generator.generate();
     questionDisplay.textContent = `${a} × ${b}`;
@@ -135,43 +237,43 @@ function nextQuestion() {
     answerInput.dataset.answer = answer;
 }
 
-/**
- * Ends the current game session and shows results.
- */
 function endGame() {
     if (timer) timer.stop();
     showScreen('results');
     finalScoreDisplay.textContent = score;
     
     const user = getUser(currentUser);
-    const modeKey = currentMode.toUpperCase();
-    
-    // Check if it's a new personal record for this mode
     const isNewRecord = user && score > (user.highScores[currentMode] || 0);
     
-    if (isNewRecord) {
-        newRecordMsg.classList.remove('hidden');
-    } else {
-        newRecordMsg.classList.add('hidden');
-    }
+    newRecordMsg.classList.toggle('hidden', !isNewRecord);
     
     saveScore(currentUser, score, currentMode);
 }
 
 // --- Event Listeners ---
 
+// Language Selection
+langBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        langBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentLanguage = btn.dataset.lang;
+        applyTranslations();
+    });
+});
+
 // Mode Selection
 modeBtns.forEach(btn => {
     btn.addEventListener('click', () => {
         const name = usernameInput.value.trim();
         if (!name) {
-            alert('Please enter your name to start playing!');
+            alert(TRANSLATIONS[currentLanguage]['alert-name']);
             usernameInput.focus();
             return;
         }
         currentUser = name;
         saveUser(currentUser);
-        currentMode = btn.dataset.mode; // 'bullet', 'blitz', or 'rapid'
+        currentMode = btn.dataset.mode;
         startCountdown();
     });
 });
@@ -185,14 +287,14 @@ levelBtns.forEach(btn => {
     });
 });
 
-// Answer Input (Real-time checking)
+// Answer Input
 answerInput.addEventListener('input', (e) => {
     const val = parseInt(e.target.value, 10);
     const correctAnswer = parseInt(e.target.dataset.answer, 10);
     
     if (val === correctAnswer) {
         score++;
-        scoreDisplay.textContent = `Score: ${score}`;
+        updateScoreDisplay();
         nextQuestion();
     }
 });
@@ -208,11 +310,9 @@ numberKeyboard.addEventListener('click', (e) => {
     } else if (key === 'Clear') {
         answerInput.value = '';
     } else {
-        // Check if there is a limit on length maybe? Not strictly needed for this game
         answerInput.value += key;
     }
     
-    // Manually trigger 'input' event so existing logic handles it
     answerInput.dispatchEvent(new Event('input'));
 });
 
@@ -224,11 +324,9 @@ restartBtn.addEventListener('click', () => {
 
 leaderboardBtn.addEventListener('click', () => {
     showScreen('leaderboard');
-    // Default to current mode if available, otherwise bullet
     const mode = currentMode || 'bullet';
     renderLeaderboard(mode);
     
-    // Update active class on filters
     filterBtns.forEach(btn => {
         btn.classList.toggle('active', btn.dataset.mode === mode);
     });
@@ -251,6 +349,6 @@ backToStartBtn.addEventListener('click', () => {
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
-    // Ready to go
+    applyTranslations();
     console.log('Multiplication Speed Math initialized.');
 });

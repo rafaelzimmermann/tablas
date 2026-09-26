@@ -111,6 +111,26 @@ button:active {
     transform: scale(0.98);
 }
 
+.language-selector {
+    display: flex;
+    justify-content: flex-end;
+    gap: 5px;
+    margin-bottom: 10px;
+}
+
+.lang-btn {
+    padding: 4px 12px;
+    font-size: 1.2rem;
+    background-color: #eee;
+    color: var(--text-color);
+    border-radius: 4px;
+}
+
+.lang-btn.active {
+    background-color: var(--primary-color);
+    color: white;
+}
+
 .level-selection {
     margin-top: 10px;
     padding-top: 10px;

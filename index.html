@@ -10,21 +10,25 @@
     <div id="app">
         <!-- Start Screen -->
         <section id="start-screen" class="screen visible">
-            <h1>Multiplication Speed Math</h1>
+            <div class="language-selector">
+                <button class="lang-btn active" data-lang="en">🇺🇸</button>
+                <button class="lang-btn" data-lang="es">🇪🇸</button>
+            </div>
+            <h1 data-i18n="title">Multiplication Speed Math</h1>
             <div class="input-group">
-                <input type="text" id="username-input" placeholder="Enter your name" maxlength="15">
+                <input type="text" id="username-input" data-i18n-placeholder="name-placeholder" placeholder="Enter your name" maxlength="15">
             </div>
             <div class="mode-selection">
-                <button class="mode-btn" data-mode="bullet">Bullet (30s)</button>
-                <button class="mode-btn" data-mode="blitz">Blitz (60s)</button>
-                <button class="mode-btn" data-mode="rapid">Rapid (120s)</button>
+                <button class="mode-btn" data-mode="bullet" data-i18n-mode="bullet">Bullet (30s)</button>
+                <button class="mode-btn" data-mode="blitz" data-i18n-mode="blitz">Blitz (60s)</button>
+                <button class="mode-btn" data-mode="rapid" data-i18n-mode="rapid">Rapid (120s)</button>
             </div>
             <div class="level-selection">
-                <p>Select Difficulty:</p>
+                <p data-i18n="difficulty-label">Select Difficulty:</p>
                 <div class="level-buttons">
-                    <button class="level-btn active" data-level="1">Level 1 (1-9)</button>
-                    <button class="level-btn" data-level="2">Level 2 (1-99)</button>
-                    <button class="level-btn" data-level="3">Level 3 (1-999)</button>
+                    <button class="level-btn active" data-level="1" data-i18n-level="level1">Level 1 (1-9)</button>
+                    <button class="level-btn" data-level="2" data-i18n-level="level2">Level 2 (1-99)</button>
+                    <button class="level-btn" data-level="3" data-i18n-level="level3">Level 3 (1-999)</button>
                 </div>
             </div>
         </section>
@@ -37,8 +41,8 @@
         <!-- Game Screen -->
         <section id="game-screen" class="screen">
             <div class="game-header">
-                <div id="timer-display">Time: 30s</div>
-                <div id="score-display">Score: 0</div>
+                <div id="timer-display" data-i18n-prefix="time-prefix">Time: 30s</div>
+                <div id="score-display" data-i18n-prefix="score-prefix">Score: 0</div>
             </div>
             <div id="question-display">5 × 5</div>
             <input type="number" id="answer-input" pattern="\d*" inputmode="numeric">
@@ -62,27 +66,27 @@
 
         <!-- Results Screen -->
         <section id="results-screen" class="screen">
-            <h2>Game Over!</h2>
+            <h2 data-i18n="game-over">Game Over!</h2>
             <div class="result-stats">
-                <p>Score: <span id="final-score">0</span></p>
-                <p id="new-record-msg" class="hidden">🎉 New Personal Record!</p>
+                <p><span data-i18n="score-label">Score</span>: <span id="final-score">0</span></p>
+                <p id="new-record-msg" class="hidden" data-i18n="new-record">🎉 New Personal Record!</p>
             </div>
-            <button id="restart-btn">Play Again</button>
-            <button id="leaderboard-btn">View Leaderboard</button>
+            <button id="restart-btn" data-i18n="restart">Play Again</button>
+            <button id="leaderboard-btn" data-i18n="leaderboard">View Leaderboard</button>
         </section>
 
         <!-- Leaderboard Screen -->
         <section id="leaderboard-screen" class="screen">
-            <h2>Leaderboard</h2>
+            <h2 data-i18n="leaderboard-title">Leaderboard</h2>
             <div class="leaderboard-filters">
-                <button class="filter-btn active" data-mode="bullet">Bullet</button>
-                <button class="filter-btn" data-mode="blitz">Blitz</button>
-                <button class="filter-btn" data-mode="rapid">Rapid</button>
+                <button class="filter-btn active" data-mode="bullet" data-i18n-mode="bullet">Bullet</button>
+                <button class="filter-btn" data-mode="blitz" data-i18n-mode="blitz">Blitz</button>
+                <button class="filter-btn" data-mode="rapid" data-i18n-mode="rapid">Rapid</button>
             </div>
             <div id="leaderboard-list">
                 <!-- Leaderboard entries will be injected here -->
             </div>
-            <button id="back-to-start-btn">Back to Start</button>
+            <button id="back-to-start-btn" data-i18n="back">Back to Start</button>
         </section>
     </div>
 
