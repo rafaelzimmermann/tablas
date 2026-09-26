@@ -111,6 +111,24 @@ button:active {
     transform: scale(0.98);
 }
 
+.secondary-btn {
+    background-color: transparent;
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
+}
+
+.secondary-btn:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.instruction {
+    font-size: 0.9rem;
+    color: #666;
+    font-style: italic;
+    margin-bottom: 10px;
+}
+
 .language-selector {
     display: flex;
     justify-content: flex-end;
@@ -148,12 +166,22 @@ button:active {
     gap: 5px;
 }
 
-.mode-btn, .filter-btn, .level-btn {
+.mode-btn {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.mode-btn.active {
+    background-color: #357abd;
+    border: 2px solid #222;
+}
+
+.filter-btn, .level-btn {
     background-color: #eee;
     color: var(--text-color);
 }
 
-.mode-btn.active, .filter-btn.active, .level-btn.active {
+.filter-btn.active, .level-btn.active {
     background-color: var(--primary-color);
     color: white;
 }
