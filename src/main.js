@@ -78,6 +78,7 @@ const leaderboardBtn = document.getElementById('leaderboard-btn');
 const filterBtns = document.querySelectorAll('.filter-btn');
 const leaderboardList = document.getElementById('leaderboard-list');
 const backToStartBtn = document.getElementById('back-to-start-btn');
+const viewLeaderboardBtn = document.getElementById('view-leaderboard-btn');
 
 // State
 let currentLanguage = 'en';
@@ -339,6 +340,16 @@ filterBtns.forEach(btn => {
         filterBtns.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         renderLeaderboard(mode);
+    });
+});
+
+viewLeaderboardBtn.addEventListener('click', () => {
+    showScreen('leaderboard');
+    const mode = currentMode || 'bullet';
+    renderLeaderboard(mode);
+    
+    filterBtns.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.mode === mode);
     });
 });
 
