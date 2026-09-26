@@ -14,7 +14,7 @@
                 <button class="lang-btn" data-lang="es">🇪🇸</button>
             </div>
             <h1 data-i18n="title">Multiplication Speed Math</h1>
-            <p class="instruction" data-i18n="start-instruction">Enter your name and select a mode to start!</p>
+            <p class="instruction" data-i18n="start-instruction">Enter your name, select a mode and level, then press Start!</p>
             <div class="input-group">
                 <input type="text" id="username-input" data-i18n-placeholder="name-placeholder" placeholder="Enter your name" maxlength="15">
             </div>
@@ -31,12 +31,15 @@
                     <button class="level-btn" data-level="3" data-i18n-level="level3">Level 3 (1-999)</button>
                 </div>
             </div>
+            <button id="start-game-btn" class="primary-btn" data-i18n="start-game">Start</button>
             <div class="divider"></div>
             <button id="view-leaderboard-btn" class="secondary-btn" data-i18n="leaderboard">View Leaderboard</button>
         </section>
+
         <section id="countdown-screen" class="screen">
             <div id="countdown-display">3</div>
         </section>
+
         <section id="game-screen" class="screen">
             <div class="game-header">
                 <div id="timer-display" data-i18n-prefix="time-prefix">Time: 30s</div>
@@ -59,6 +62,7 @@
                 <button class="key special" data-key="Clear">C</button>
             </div>
         </section>
+
         <section id="results-screen" class="screen">
             <h2 data-i18n="game-over">Game Over!</h2>
             <div class="result-stats">
@@ -68,6 +72,7 @@
             <button id="restart-btn" data-i18n="restart">Play Again</button>
             <button id="leaderboard-btn" data-i18n="leaderboard">View Leaderboard</button>
         </section>
+
         <section id="leaderboard-screen" class="screen">
             <h2 data-i18n="leaderboard-title">Leaderboard</h2>
             <div class="leaderboard-filters">
@@ -75,8 +80,7 @@
                 <button class="filter-btn" data-mode="blitz" data-i18n-mode="blitz">Blitz</button>
                 <button class="filter-btn" data-mode="rapid" data-i18n-mode="rapid">Rapid</button>
             </div>
-            <div id="leaderboard-list">
-            </div>
+            <div id="leaderboard-list"></div>
             <button id="back-to-start-btn" data-i18n="back">Back to Start</button>
         </section>
     </div>

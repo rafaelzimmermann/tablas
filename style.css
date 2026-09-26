@@ -111,6 +111,11 @@ button:active {
     transform: scale(0.98);
 }
 
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 .secondary-btn {
     background-color: transparent;
     color: var(--primary-color);

@@ -23,8 +23,8 @@ const TRANSLATIONS = {
         'new-record': '🎉 New Personal Record!',
         'restart': 'Play Again',
         'leaderboard': 'View Leaderboard',
-        'start-instruction': 'Enter your name and select a mode to start!',
-        'leaderboard-title': 'Leaderboard',
+        'start-instruction': 'Enter your name, select a mode and level, then press Start!',
+        'start-game': 'Start',
         'back': 'Back to Start',
         'no-scores': 'No scores yet!',
         'alert-name': 'Please enter your name to start playing!'
@@ -81,6 +81,7 @@ const filterBtns = document.querySelectorAll('.filter-btn');
 const leaderboardList = document.getElementById('leaderboard-list');
 const backToStartBtn = document.getElementById('back-to-start-btn');
 const viewLeaderboardBtn = document.getElementById('view-leaderboard-btn');
+const startGameBtn = document.getElementById('start-game-btn');
 
 // State
 let currentLanguage = 'en';
@@ -125,15 +126,20 @@ function applyTranslations() {
     document.querySelectorAll('[data-i18n-prefix]').forEach(el => {
         const key = el.dataset.i18nPrefix;
         const prefix = t[key];
-        // We need to preserve the numeric part if it's already there
-        // In our case, they are updated via script, so we just store the prefix 
-        // and re-apply it when the numeric value changes.
         el.dataset.currentPrefix = prefix;
     });
 
     // Update existing displays with new prefixes
     updateTimerDisplay();
     updateScoreDisplay();
+}
+
+/**
+ * Updates the enabled state of the start game button.
+ */
+function updateStartButtonState() {
+    const name = usernameInput.value.trim();
+    startGameBtn.disabled = !(name && currentMode);
 }
 
 /**
@@ -262,23 +268,39 @@ langBtns.forEach(btn => {
         btn.classList.add('active');
         currentLanguage = btn.dataset.lang;
         applyTranslations();
+        updateStartButtonState();
     });
 });
 
 // Mode Selection
 modeBtns.forEach(btn => {
     btn.addEventListener('click', () => {
+        modeBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentMode = btn.dataset.mode;
+        
         const name = usernameInput.value.trim();
-        if (!name) {
-            alert(TRANSLATIONS[currentLanguage]['alert-name']);
-            usernameInput.focus();
-            return;
+        if (name) {
+            currentUser = name;
+            saveUser(currentUser);
         }
+        updateStartButtonState();
+    });
+});
+
+// Username Input
+usernameInput.addEventListener('input', () => {
+    const name = usernameInput.value.trim();
+    if (name) {
         currentUser = name;
         saveUser(currentUser);
-        currentMode = btn.dataset.mode;
-        startCountdown();
-    });
+    }
+    updateStartButtonState();
+});
+
+// Start Game
+startGameBtn.addEventListener('click', () => {
+    startCountdown();
 });
 
 // Level Selection
@@ -363,5 +385,6 @@ backToStartBtn.addEventListener('click', () => {
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
     applyTranslations();
+    updateStartButtonState();
     console.log('Multiplication Speed Math initialized.');
 });
