@@ -1,9 +1,9 @@
 // src/timer.js
 
 export const TIMER_MODES = {
-    BULLET: { label: 'Bullet', duration: 30 },
-    BLITZ: { label: 'Blitz', duration: 60 },
-    RAPID: { label: 'Rapid', duration: 120 }
+    bullet: { label: 'Bullet', duration: 30 },
+    blitz: { label: 'Blitz', duration: 60 },
+    rapid: { label: 'Rapid', duration: 120 }
 };
 
 export class Timer {

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multiplication Speed Math</title>
+    <title>Math Speed Games</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -12,28 +12,51 @@
             <div class="language-selector">
                 <button class="lang-btn active" data-lang="en">🇺🇸</button>
                 <button class="lang-btn" data-lang="es">🇪🇸</button>
-            </div>
-            <h1 data-i18n="title">Multiplication Speed Math</h1>
-            <p class="instruction" data-i18n="start-instruction">Enter your name, select a mode and level, then press Start!</p>
+            </div >
+            <h1 data-i18n="title">Math Speed Games</h1>
+            <p class="instruction" data-i18n="start-instruction">Enter your name to start!</p>
             <div class="input-group">
                 <input type="text" id="username-input" data-i18n-placeholder="name-placeholder" placeholder="Enter your name" maxlength="15">
+            </div >
+            <button id="continue-btn" class="primary-btn" data-i18n="start-game">Continue</button>
+            <div class="divider"></div>
+            <button id="view-leaderboard-btn" class="secondary-btn" data-i18n="leaderboard">View Leaderboard</button>
+        </section>
+
+        <section id="game-selection-screen" class="screen">
+            <h1 data-i18n="select-game">Select a Game</h1>
+            <div class="game-selection-grid">
+                <button class="game-btn" data-game="multiplication" data-i18n="multiplication">Multiplication</button>
+                <button class="game-btn" data-game="sum" data-i18n="sum">Sum</button>
+                <button class="game-btn" data-game="subtraction" data-i18n="subtraction">Subtraction</button>
+                <button class="game-btn" data-game="division" data-i18n="division">Division</button>
             </div>
+            <button class="secondary-btn" id="back-to-start-btn" data-i18n="back">Back</button>
+        </section>
+
+        <section id="mode-level-screen" class="screen">
+            <h1 data-i18n="select-mode">Select Mode & Level</h1>
+            
             <div class="mode-selection">
-                <button class="mode-btn" data-mode="bullet" data-i18n-mode="bullet">Bullet (30s)</button>
-                <button class="mode-btn" data-mode="blitz" data-i18n-mode="blitz">Blitz (60s)</button>
-                <button class="mode-btn" data-mode="rapid" data-i18n-mode="rapid">Rapid (120s)</button>
+                <p data-i18n="difficulty-label">Select Mode:</p>
+                <div class="mode-buttons">
+                    <button class="mode-btn" data-mode="bullet" data-i18n-mode="bullet">Bullet (30s)</button>
+                    <button class="mode-btn" data-mode="blitz" data-i18n-mode="blitz">Blitz (60s)</button>
+                    <button class="mode-btn" data-mode="rapid" data-i18n-mode="rapid">Rapid (120s)</button>
+                </div>
             </div>
+
             <div class="level-selection">
-                <p data-i18n="difficulty-label">Select Difficulty:</p>
+                <p data-i18n="difficulty-label">Select Level:</p>
                 <div class="level-buttons">
-                    <button class="level-btn active" data-level="1" data-i18n-level="level1">Level 1 (1-9)</button>
+                    <button class="level-btn" data-level="1" data-i18n-level="level1">Level 1 (1-9)</button>
                     <button class="level-btn" data-level="2" data-i18n-level="level2">Level 2 (1-99)</button>
                     <button class="level-btn" data-level="3" data-i18n-level="level3">Level 3 (1-999)</button>
                 </div>
             </div>
+
             <button id="start-game-btn" class="primary-btn" data-i18n="start-game">Start</button>
-            <div class="divider"></div>
-            <button id="view-leaderboard-btn" class="secondary-btn" data-i18n="leaderboard">View Leaderboard</button>
+            <button class="secondary-btn" id="back-to-games-btn" data-i18n="back-to-games">Back to Games</button>
         </section>
 
         <section id="countdown-screen" class="screen">
