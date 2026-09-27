@@ -1,94 +1,32 @@
-// src/ui/components/StartScreenComponent.js
-
-import { Component } from '../../core/Component.js';
-import { TRANSLATIONS } from '../translations.js';
-
+import { Component } from "../../core/Component.js";
+import {
+  OPERATIONS,
+  RANGES,
+  text,
+  escapeHtml,
+  settings,
+  number,
+} from "../shared.js";
 export class StartScreenComponent extends Component {
-    constructor(container, gameState, app) {
-        super(container, gameState);
-        this.app = app;
-    }
-
-    mount() {
-        super.mount();
-        this.setupEventListeners();
-    }
-
-    render() {
-        this.applyTranslations();
-    }
-
-    setupEventListeners() {
-        // Language selection
-        this.container.querySelectorAll('.lang-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const lang = btn.dataset.lang;
-                this.gameState.setLanguage(lang);
-                this.applyTranslations();
-                
-                // update active class
-                this.container.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-            });
-        });
-
-        // Username input
-        const usernameInput = this.container.querySelector('#username-input');
-        usernameInput.addEventListener('input', () => {
-            const name = usernameInput.value.trim();
-            if (name) {
-                this.gameState.setUser(name);
-            } else {
-                this.gameState.setUser(null);
-            }
-            this.updateStartButtonState();
-        });
-
-        // Continue Button
-        this.container.querySelector('#continue-btn').addEventListener('click', () => {
-            if (this.gameState.user) {
-                this.app.navigateTo('game-selection-screen');
-            } else {
-                alert(TRANSLATIONS[this.gameState.language]['alert-name']);
-            }
-        });
-
-        // View Leaderboard
-        this.container.querySelector('#view-leaderboard-btn').addEventListener('click', () => {
-            this.app.navigateTo('leaderboard');
-        });
-    }
-
-    applyTranslations() {
-        const t = TRANSLATIONS[this.gameState.language];
-        
-        // Text content
-        this.container.querySelectorAll('[data-i18n]').forEach(el => {
-            const key = el.dataset.i18n;
-            if (t[key]) el.textContent = t[key];
-        });
-
-        // Placeholder
-        this.container.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-            const key = el.dataset.i18nPlaceholder;
-            if (t[key]) el.placeholder = t[key];
-        });
-
-        // Instruction
-        const instruction = this.container.querySelector('.instruction');
-        if (instruction) {
-            instruction.textContent = t['start-instruction'];
-        }
-    }
-
-    updateStartButtonState() {
-        const continueBtn = this.container.querySelector('#continue-btn');
-        if (this.gameState.user) {
-            continueBtn.disabled = false;
-            continueBtn.style.opacity = '1';
-        } else {
-            continueBtn.disabled = true;
-            continueBtn.style.opacity = '0.5';
-        }
-    }
+  render() {
+    const s = this.gameState;
+    const max = RANGES[s.level];
+    const a = max === 9 ? 4 : max === 99 ? 24 : 124;
+    const b = max === 9 ? 3 : max === 99 ? 13 : 113;
+    const examples = {
+      multiplication: `${a} × ${b} = ${number(s, a * b)}`,
+      sum: `${a} + ${b} = ${number(s, a + b)}`,
+      subtraction: `${a} − ${b} = ${a - b}`,
+      division: `${a * 3} ÷ 3 = ${a}`,
+    };
+    this.container.innerHTML = `<section id="start-screen" class="intro"><div class="eyebrow">${text(s, "ready")}</div><h1>${text(s, "title")}</h1><p>${text(s, "subtitle")}</p></section>
+      <div class="setup"><section class="panel"><div class="panel-title"><h2>${text(s, "choose")}</h2><span class="small">${text(s, "chooseOne")}</span></div>
+      <div class="operations">${OPERATIONS.map((op) => `<button class="operation" data-group="gameType" data-value="${op.id}" aria-pressed="${op.id === s.gameType}"><span class="tick" aria-hidden="true">${op.id === s.gameType ? "✓" : ""}</span><span class="symbol" aria-hidden="true">${op.symbol}</span><strong>${text(s, op.id)}</strong><span class="small">${op.example}</span></button>`).join("")}</div>
+      <p class="tip"><span aria-hidden="true">✦</span><span><b>${text(s, "daily")}</b> ${text(s, "dailyHint")}</span></p></section>
+      <section class="panel"><div class="panel-title"><h2>${text(s, "yourRound")}</h2></div><form id="setup-form" class="round-config" novalidate>
+      <label for="username-input">${text(s, "name")} <span class="optional">· ${text(s, "optional")}</span></label><input id="username-input" maxlength="15" autocomplete="off" aria-describedby="name-hint" placeholder="${text(s, "namePlaceholder")}" value="${escapeHtml(s.user || "")}"><p class="sample" id="name-hint">${text(s, "nameHint")}</p>
+      ${settings(s)}<p class="sample">${text(s, "example", { example: examples[s.gameType] })}</p>
+      <button id="start-game-btn" type="submit" class="primary start">${text(s, "start")} <span aria-hidden="true">→</span></button><p class="under-button">${text(s, s.mode + "Long")} · ${text(s, "confidence")}</p></form></section></div>
+      <p class="footnote"><b>${text(s, "pace")}</b> ${text(s, "paceHint")}</p>`;
+  }
 }

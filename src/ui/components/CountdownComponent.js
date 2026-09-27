@@ -1,44 +1,8 @@
-// src/ui/components/CountdownComponent.js
-
-import { Component } from '../../core/Component.js';
-import { TRANSLATIONS } from '../translations.js';
-
+import { Component } from "../../core/Component.js";
+import { text, contextLabel } from "../shared.js";
 export class CountdownComponent extends Component {
-    constructor(container, gameState, app) {
-        super(container, gameState);
-        this.app = app;
-        this.countdown = 5;
-    }
-
-    mount() {
-        super.mount();
-    }
-
-    activate() {
-        this.startCountdown();
-    }
-
-    startCountdown() {
-        this.countdown = 5;
-        this.render();
-
-        const interval = setInterval(() => {
-            this.countdown--;
-            if (this.countdown <= 0) {
-                clearInterval(interval);
-                this.gameState.setIsGameActive(true);
-                this.app.navigateTo('game');
-            } else {
-                this.render();
-            }
-        }, 1000);
-    }
-
-    render() {
-        this.clear();
-        const display = document.createElement('div');
-        display.id = 'countdown-display';
-        display.textContent = this.countdown;
-        this.container.appendChild(display);
-    }
+  render() {
+    const s = this.gameState;
+    this.container.innerHTML = `<section id="countdown-screen" class="countdown-wrap panel"><h1>${text(s, "countdown")}</h1><p class="countdown-context">${contextLabel(s)}</p><div id="countdown-display" class="countdown-number" role="status">3</div><p>${text(s, "countdownHint")}</p><button data-action="cancel">${text(s, "cancel")}</button></section>`;
+  }
 }

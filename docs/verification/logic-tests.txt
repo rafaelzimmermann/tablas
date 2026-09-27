@@ -1,0 +1,23 @@
+▶ LearningService
+  ✔ recordFailure and getPool (1.968ms)
+  ✔ getPool returns empty if no failures (0.0585ms)
+✔ LearningService (2.546375ms)
+▶ Generators
+  ✔ AdditionGenerator produces correct sums (0.173334ms)
+  ✔ SubtractionGenerator produces correct differences (0.118ms)
+  ✔ MultiplicationGenerator produces correct products (0.09275ms)
+  ✔ DivisionGenerator produces correct integer quotients (0.091375ms)
+  ✔ Generator picks from learning pool (0.046208ms)
+✔ Generators (0.882334ms)
+▶ Data Layer helpers
+  ✔ getCompositeKey (0.280667ms)
+  ✔ saveUser and getUser (0.076583ms)
+✔ Data Layer helpers (0.974ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 12
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 58.731625

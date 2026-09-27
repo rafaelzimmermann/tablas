@@ -1,10 +1,12 @@
 {
   "name": "tablas-math-game",
   "version": "1.0.0",
-  "description": "Multiplication Speed Math Game",
+  "description": "A local-first arithmetic practice game for kids in English and Spanish",
   "type": "module",
   "scripts": {
-    "test": "playwright test"
+    "test": "playwright test",
+    "start": "node scripts/serve.mjs",
+    "test:unit": "node --test tests/*.test.js"
   },
   "devDependencies": {
     "@playwright/test": "^1.40.0"

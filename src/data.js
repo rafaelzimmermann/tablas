@@ -1,151 +1,140 @@
-// src/data.js
-
-/**
- * Data Access Layer for Math Games Suite
- * Uses localStorage for persistence.
- * 
- * Schema:
- * 'math_game_users': { 
- *   [username]: { 
- *     totalGames: number, 
- *     highScores: { [compositeKey]: number } // e.g. "multiplication_bullet_1"
- *   } 
- * }
- * 'math_game_leaderboard': [ 
- *   { username: string, score: number, compositeKey: string, timestamp: number } 
- * ]
- * 'math_game_learning_data': {
- *   [username]: {
- *     [gameType]: [ { a: number, b: number, answer: number, timestamp: number } ]
- *   }
- * }
- */
-
-const STORAGE_KEYS = {
-    USERS: 'math_game_users',
-    LEADERBOARD: 'math_game_leaderboard',
-    LEARNING: 'math_game_learning_data'
+// Keep the established localStorage keys and score category format.
+const KEYS = {
+  users: "math_game_users",
+  scores: "math_game_leaderboard",
+  learning: "math_game_learning_data",
 };
-
-/**
- * Gets the user data from localStorage.
- * @param {string} username 
- * @returns {Object|null}
- */
+const memory = new Map();
+const unavailable = new Set();
+let storageFailed = false;
+const own = (object, key) => Object.prototype.hasOwnProperty.call(object, key);
+function read(key, fallback) {
+  if (unavailable.has(key)) return memory.get(key) ?? fallback;
+  try {
+    const raw = localStorage.getItem(key);
+    const value = raw === null ? fallback : JSON.parse(raw);
+    if (
+      !value ||
+      typeof value !== "object" ||
+      Array.isArray(value) !== Array.isArray(fallback)
+    )
+      throw new Error("Invalid saved data");
+    memory.set(key, value);
+    return value;
+  } catch {
+    // Do not overwrite corrupt data. Keep this visit playable in memory.
+    unavailable.add(key);
+    storageFailed = true;
+    return memory.get(key) ?? fallback;
+  }
+}
+function write(key, value) {
+  memory.set(key, value);
+  if (unavailable.has(key)) return;
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch {
+    unavailable.add(key);
+    storageFailed = true;
+  }
+}
+export function storageUnavailable() {
+  return storageFailed;
+}
 export function getUser(username) {
-    const users = JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS) || '{}');
-    return users[username] || null;
+  if (!username) return null;
+  const users = read(KEYS.users, {});
+  const user = own(users, username) ? users[username] : null;
+  return user && typeof user.highScores === "object" && user.highScores !== null
+    ? user
+    : null;
 }
-
-/**
- * Creates a new user in localStorage if they don't exist.
- * @param {string} username 
- */
 export function saveUser(username) {
-    const users = JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS) || '{}');
-    if (!users[username]) {
-        users[username] = {
-            totalGames: 0,
-            highScores: {}
-        };
-        localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
-    }
+  if (!username) return;
+  const users = read(KEYS.users, {});
+  if (!getUser(username)) {
+    Object.defineProperty(users, username, {
+      value: { totalGames: 0, highScores: {} },
+      enumerable: true,
+      configurable: true,
+      writable: true,
+    });
+    write(KEYS.users, users);
+  }
 }
-
-/**
- * Formats a composite key for scores and leaderboards.
- * @param {string} gameType 
- * @param {string} mode 
- * @param {number} level 
- * @returns {string}
- */
 export function getCompositeKey(gameType, mode, level) {
-    return `${gameType}_${mode}_${level}`;
+  return `${gameType}_${mode}_${level}`;
 }
-
-/**
- * Saves a score to the leaderboard and updates user's high score.
- * @param {string} username 
- * @param {number} score 
- * @param {string} compositeKey 
- */
-export function saveScore(username, score, compositeKey) {
-    // 1. Update Leaderboard
-    const leaderboard = JSON.parse(localStorage.getItem(STORAGE_KEYS.LEADERBOARD) || '[]');
-    leaderboard.push({
-        username,
-        score,
-        compositeKey,
-        timestamp: Date.now()
+export function saveScore(username, score, compositeKey, roundId = null) {
+  if (!username || !Number.isInteger(score) || score < 0) return;
+  saveUser(username);
+  const scores = read(KEYS.scores, []);
+  if (!roundId || !scores.some((entry) => entry?.roundId === roundId)) {
+    scores.push({
+      username,
+      score,
+      compositeKey,
+      timestamp: Date.now(),
+      ...(roundId ? { roundId } : {}),
     });
-    // Limit leaderboard size to prevent bloat
-    if (leaderboard.length > 500) {
-        leaderboard.shift();
-    }
-    localStorage.setItem(STORAGE_KEYS.LEADERBOARD, JSON.stringify(leaderboard));
-
-    // 2. Update User High Score
-    const users = JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS) || '{}');
-    if (users[username]) {
-        users[username].totalGames += 1;
-        if (score > (users[username].highScores[compositeKey] || 0)) {
-            users[username].highScores[compositeKey] = score;
-        }
-        localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
-    }
+    write(KEYS.scores, scores.slice(-500));
+  }
+  const users = read(KEYS.users, {});
+  const user = users[username];
+  const recorded = Array.isArray(user.recordedRounds)
+    ? user.recordedRounds
+    : [];
+  if (roundId && recorded.includes(roundId)) return;
+  user.totalGames = (Number(user.totalGames) || 0) + 1;
+  user.highScores[compositeKey] = Math.max(
+    Number(user.highScores[compositeKey]) || 0,
+    score,
+  );
+  if (roundId) user.recordedRounds = [...recorded, roundId].slice(-500);
+  write(KEYS.users, users);
 }
-
-/**
- * Gets the leaderboard for a specific composite key.
- * @param {string} compositeKey 
- * @returns {Array}
- */
 export function getLeaderboard(compositeKey) {
-    const leaderboard = JSON.parse(localStorage.getItem(STORAGE_KEYS.LEADERBOARD) || '[]');
-    return leaderboard
-        .filter(entry => entry.compositeKey === compositeKey)
-        .sort((a, b) => b.score - a.score || a.timestamp - b.timestamp)
-        .slice(0, 10); // Top 10
+  return read(KEYS.scores, [])
+    .filter(
+      (entry) =>
+        entry &&
+        typeof entry.username === "string" &&
+        entry.compositeKey === compositeKey &&
+        Number.isInteger(entry.score) &&
+        entry.score >= 0,
+    )
+    .sort((a, b) => b.score - a.score || a.timestamp - b.timestamp)
+    .slice(0, 10);
 }
-
-/**
- * Records a wrong answer for a user.
- * @param {string} username 
- * @param {string} gameType 
- * @param {Object} questionDetails { a, b, answer }
- */
 export function recordError(username, gameType, { a, b, answer }) {
-    const learningData = JSON.parse(localStorage.getItem(STORAGE_KEYS.LEARNING) || '{}');
-    
-    if (!learningData[username]) {
-        learningData[username] = {};
-    }
-    if (!learningData[username][gameType]) {
-        learningData[username][gameType] = [];
-    }
-
-    learningData[username][gameType].push({
-        a,
-        b,
-        answer,
-        timestamp: Date.now()
+  if (!username) return;
+  const data = read(KEYS.learning, {});
+  if (
+    !own(data, username) ||
+    !data[username] ||
+    typeof data[username] !== "object"
+  ) {
+    Object.defineProperty(data, username, {
+      value: {},
+      enumerable: true,
+      configurable: true,
+      writable: true,
     });
-
-    // Limit number of errors per game type to prevent excessive growth
-    if (learningData[username][gameType].length > 50) {
-        learningData[username][gameType].shift();
-    }
-
-    localStorage.setItem(STORAGE_KEYS.LEARNING, JSON.stringify(learningData));
+  }
+  const pool = Array.isArray(data[username][gameType])
+    ? data[username][gameType]
+    : [];
+  data[username][gameType] = [
+    ...pool,
+    { a, b, answer, timestamp: Date.now() },
+  ].slice(-50);
+  write(KEYS.learning, data);
 }
-
-/**
- * Gets the set of failed questions for a user and game type.
- * @param {string} username 
- * @param {string} gameType 
- * @returns {Array}
- */
 export function getLearningPool(username, gameType) {
-    const learningData = JSON.parse(localStorage.getItem(STORAGE_KEYS.LEARNING) || '{}');
-    return learningData[username]?.[gameType] || [];
+  if (!username) return [];
+  const data = read(KEYS.learning, {});
+  const pool = own(data, username) ? data[username]?.[gameType] : [];
+  return Array.isArray(pool)
+    ? pool.filter((q) => q && [q.a, q.b, q.answer].every(Number.isFinite))
+    : [];
 }

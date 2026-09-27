@@ -1,0 +1,66 @@
+{
+  "findings": [
+    {
+      "view": "home",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "view": "game",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "view": "results",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "view": "progress",
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "view": "home",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "view": "game",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "view": "results",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "view": "progress",
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "view": "home",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "view": "game",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "view": "results",
+      "width": 320,
+      "overflow": false
+    },
+    {
+      "view": "progress",
+      "width": 320,
+      "overflow": false
+    }
+  ],
+  "prototypeErrors": [],
+  "interactions": "wrong-answer retention, pause, Escape, 3-answer completion, replay reset, preserved name, score-filter empty state passed"
+}
