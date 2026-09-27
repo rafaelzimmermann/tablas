@@ -12,6 +12,9 @@ export class StartScreenComponent extends Component {
     mount() {
         super.mount();
         this.setupEventListeners();
+    }
+
+    render() {
         this.applyTranslations();
     }
 

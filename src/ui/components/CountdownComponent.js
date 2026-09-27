@@ -12,6 +12,9 @@ export class CountdownComponent extends Component {
 
     mount() {
         super.mount();
+    }
+
+    activate() {
         this.startCountdown();
     }
 

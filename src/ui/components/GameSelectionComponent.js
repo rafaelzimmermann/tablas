@@ -12,6 +12,9 @@ export class GameSelectionComponent extends Component {
     mount() {
         super.mount();
         this.setupEventListeners();
+    }
+
+    render() {
         this.applyTranslations();
     }
 

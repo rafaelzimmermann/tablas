@@ -22,9 +22,12 @@ export class GameComponent extends Component {
 
     mount() {
         super.mount();
-        this.setupGame();
         this.setupEventListeners();
         this.render();
+    }
+
+    activate() {
+        this.setupGame();
     }
 
     setupGame() {

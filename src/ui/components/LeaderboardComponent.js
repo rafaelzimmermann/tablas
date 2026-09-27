@@ -14,6 +14,9 @@ export class LeaderboardComponent extends Component {
     mount() {
         super.mount();
         this.setupEventListeners();
+    }
+
+    activate() {
         this.renderLeaderboard();
     }
 

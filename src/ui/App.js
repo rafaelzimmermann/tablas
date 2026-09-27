@@ -19,7 +19,7 @@ export class App extends Component {
         this.gameState = gameState;
         this.components = {};
         this.screens = {
-            start: document.getElementById('start-screen'),
+            'start-screen': document.getElementById('start-screen'),
             'game-selection-screen': document.getElementById('game-selection-screen'),
             'mode-level-screen': document.getElementById('mode-level-screen'),
             countdown: document.getElementById('countdown-screen'),
@@ -41,15 +41,40 @@ export class App extends Component {
         const target = this.screens[screenId];
         if (target) {
             target.classList.add('visible');
+            
+            // Call activate on the component if it exists
+            const component = this._getComponentForScreen(screenId);
+            if (component && component.activate) {
+                component.activate();
+            }
         } else {
             console.error(`Screen with ID ${screenId} not found.`);
         }
     }
 
+    /**
+     * Maps screenId to the component key in this.components
+     * @param {string} screenId
+     * @returns {Component|null}
+     */
+    _getComponentForScreen(screenId) {
+        const mapping = {
+            'start-screen': 'start',
+            'game-selection-screen': 'gameSelection',
+            'mode-level-screen': 'modeLevel',
+            'countdown': 'countdown',
+            'game': 'game',
+            'results': 'results',
+            'leaderboard': 'leaderboard'
+        };
+        const componentKey = mapping[screenId];
+        return componentKey ? this.components[componentKey] : null;
+    }
+
     mount() {
         // Mount all components that need to exist for their respective screens
-        if (this.screens.start) {
-            this.components.start = new StartScreenComponent(this.screens.start, this.gameState, this);
+        if (this.screens['start-screen']) {
+            this.components.start = new StartScreenComponent(this.screens['start-screen'], this.gameState, this);
             this.components.start.mount();
         }
 

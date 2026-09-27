@@ -12,6 +12,9 @@ export class ResultsComponent extends Component {
 
     mount() {
         super.mount();
+    }
+
+    activate() {
         this.setupEventListeners();
     }
 
