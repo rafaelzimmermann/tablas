@@ -1,6 +1,6 @@
 // src/logic/generators/MultiplicationGenerator.js
 
-import { BaseGenerator } from '../../BaseGenerator.js';
+import { BaseGenerator } from '../BaseGenerator.js';
 
 export class MultiplicationGenerator extends BaseGenerator {
     constructor(maxFactor = 12) {

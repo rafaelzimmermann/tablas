@@ -1,6 +1,6 @@
 // src/logic/generators/AdditionGenerator.js
 
-import { BaseGenerator } from '../../BaseGenerator.js';
+import { BaseGenerator } from '../BaseGenerator.js';
 
 export class AdditionGenerator extends BaseGenerator {
     constructor(maxFactor = 50) {

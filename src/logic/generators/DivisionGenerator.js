@@ -1,6 +1,6 @@
 // src/logic/generators/DivisionGenerator.js
 
-import { BaseGenerator } from '../../BaseGenerator.js';
+import { BaseGenerator } from '../BaseGenerator.js';
 
 export class DivisionGenerator extends BaseGenerator {
     constructor(maxFactor = 12) {

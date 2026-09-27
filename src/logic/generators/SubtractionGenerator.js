@@ -1,6 +1,6 @@
 // src/logic/generators/SubtractionGenerator.js
 
-import { BaseGenerator } from '../../BaseGenerator.js';
+import { BaseGenerator } from '../BaseGenerator.js';
 
 export class SubtractionGenerator extends BaseGenerator {
     constructor(maxFactor = 50) {
