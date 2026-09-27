@@ -41,38 +41,6 @@ export class StartScreenComponent extends Component {
             this.updateStartButtonState();
         });
 
-        // Mode Selection
-        this.container.querySelectorAll('.mode-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const mode = btn.dataset.mode;
-                this.gameState.setMode(mode);
-                
-                this.container.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                
-                this.updateStartButtonState();
-            });
-        });
-
-        // Level Selection
-        this.container.querySelectorAll('.level-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const level = parseInt(btn.dataset.level, 10);
-                this.gameState.setLevel(level);
-                
-                this.container.querySelectorAll('.level-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-            });
-        });
-
-        // Start Button
-        this.container.querySelector('#start-game-btn').addEventListener('click', () => {
-            if (this.gameState.user && this.gameState.mode) {
-                this.app.navigateTo('countdown');
-                // We would probably trigger a countdown component here
-            }
-        });
-
         // Continue Button
         this.container.querySelector('#continue-btn').addEventListener('click', () => {
             if (this.gameState.user) {
@@ -111,6 +79,13 @@ export class StartScreenComponent extends Component {
     }
 
     updateStartButtonState() {
-        // Not strictly needed if we use the alert, but good practice
+        const continueBtn = this.container.querySelector('#continue-btn');
+        if (this.gameState.user) {
+            continueBtn.disabled = false;
+            continueBtn.style.opacity = '1';
+        } else {
+            continueBtn.disabled = true;
+            continueBtn.style.opacity = '0.5';
+        }
     }
 }
