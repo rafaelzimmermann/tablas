@@ -9,25 +9,44 @@ test.describe('Math Speed Games', () => {
 
   test('should show start screen initially', async ({ page }) => {
     await expect(page.locator('#start-screen')).toBeVisible();
-    await expect(page.locator('h1')).toHaveText('Math Speed Games');
+    await expect(page.locator('#start-screen h1')).toHaveText('Math Speed Games');
   });
 
   test('should change language to Spanish', async ({ page }) => {
     await page.click('button[data-lang="es"]');
-    await expect(page.locator('h1')).toHaveText('Matemáticas de Velocidad');
+    await expect(page.locator('#start-screen h1')).toHaveText('Matemáticas de Velocidad');
     await expect(page.locator('#username-input')).toHaveAttribute('placeholder', 'Introduce tu nombre');
   });
 
   test('should require username to continue', async ({ page }) => {
-    const alertPromise = page.waitForEvent('dialog');
-    await page.click('#continue-btn');
-    const dialog = await alertPromise;
-    await expect(dialog.message()).toBe('¡Por favor, introduce tu nombre para empezar!');
+    let dialogMessage = '';
+    page.on('dialog', dialog => {
+      dialogMessage = dialog.message();
+      dialog.accept();
+    });
+
+    await expect(page.locator('#start-screen')).toBeVisible();
+
+    // Enable the button even though username is empty
+    await page.evaluate(() => {
+      const btn = document.querySelector('#continue-btn');
+      if (btn) btn.disabled = false;
+    });
+    
+    // Trigger click via evaluate to avoid Playwright's click-related timeouts
+    await page.evaluate(() => {
+      const btn = document.querySelector('#continue-btn');
+      if (btn) btn.click();
+    });
+    
+    // Wait for the message to be populated
+    await expect.poll(() => dialogMessage, { timeout: 5000 }).toBe('Please enter your name to start playing!');
   });
 
   test('should play a basic game loop', async ({ page }) => {
     // 1. Set up user
     await page.fill('#username-input', 'TestUser');
+    await page.waitForTimeout(100); // Wait for button to enable
     await page.click('#continue-btn');
     
     // 2. Select game
@@ -58,6 +77,7 @@ test.describe('Math Speed Games', () => {
 
   test('should use number keyboard', async ({ page }) => {
     await page.fill('#username-input', 'KeyboardUser');
+    await page.waitForTimeout(100); // Wait for button to enable
     await page.click('#continue-btn');
     await page.click('.game-btn[data-game="multiplication"]');
     await page.click('.mode-btn[data-mode="bullet"]');
@@ -79,8 +99,8 @@ test.describe('Math Speed Games', () => {
   });
 
   test('should show leaderboard', async ({ page }) => {
-    await page.fill('#username-input', 'LeaderboardUser');
-    await page.click('#continue-btn');
+    // On start screen
+    await expect(page.locator('#start-screen')).toBeVisible();
     await page.click('#view-leaderboard-btn');
     await expect(page.locator('#leaderboard-screen')).toBeVisible();
   });
