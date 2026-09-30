@@ -36,6 +36,20 @@ export class GameComponent extends Component {
     this.roundId =
       globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`;
     this.generator = new GENERATORS[s.gameType](RANGES[s.level]);
+    const max = RANGES[s.level];
+    // Snapshot prior mistakes so new failures are only practiced in future rounds.
+    // Learning data predates levels; never inject harder questions into an easier round.
+    this.learningPool = LearningService.getPool(s.user, s.gameType).filter(
+      (q) =>
+        q.a >= 1 &&
+        q.b >= 1 &&
+        (s.gameType === "division"
+          ? q.b <= max &&
+            q.answer >= 1 &&
+            q.answer <= max &&
+            q.a / q.b === q.answer
+          : q.a <= max && q.b <= max),
+    );
     this.active = true;
     this.paused = false;
     s.score = 0;
@@ -57,21 +71,8 @@ export class GameComponent extends Component {
       <button class="primary check" type="submit">${text(s, "check")} <span aria-hidden="true">✓</span></button></form></div></section>`;
   }
   nextQuestion() {
-    const s = this.gameState,
-      max = RANGES[s.level];
-    // Learning data predates levels; never inject harder questions into an easier round.
-    const pool = LearningService.getPool(s.user, s.gameType).filter(
-      (q) =>
-        q.a >= 1 &&
-        q.b >= 1 &&
-        (s.gameType === "division"
-          ? q.b <= max &&
-            q.answer >= 1 &&
-            q.answer <= max &&
-            q.a / q.b === q.answer
-          : q.a <= max && q.b <= max),
-    );
-    this.currentQuestion = this.generator.generate(pool);
+    const s = this.gameState;
+    this.currentQuestion = this.generator.generate(this.learningPool);
     this.failedCurrentQuestion = false;
     const { a, b } = this.currentQuestion,
       op = OPERATIONS.find((o) => o.id === s.gameType);

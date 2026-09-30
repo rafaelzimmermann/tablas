@@ -77,6 +77,29 @@ test("typing and editing do not submit; wrong submissions retain input and recor
   await expect(page.locator("#answer-input")).toHaveValue("");
 });
 
+test("new mistakes enter the learning pool only on the next game", async ({ page }) => {
+  await page.addInitScript(() => { Math.random = () => 0.9; });
+  await start(page, "Alex");
+  const originalQuestion = await page.locator("#question-display").textContent();
+  const correct = await answer(page);
+  await page.locator("#answer-input").fill("999999");
+  await page.locator(".check").click();
+  expect(await page.evaluate(() =>
+    JSON.parse(localStorage.getItem("math_game_learning_data")!).Alex.multiplication.length,
+  )).toBe(1);
+
+  // Force the learning branch whenever a saved question is available.
+  await page.evaluate(() => { Math.random = () => 0; });
+  await page.locator("#answer-input").fill(correct);
+  await page.locator(".check").click();
+  await expect(page.locator("#question-display")).not.toHaveText(originalQuestion!);
+
+  await page.clock.fastForward(30000);
+  await page.locator('[data-action="replay"]').click();
+  await page.clock.fastForward(3000);
+  await expect(page.locator("#question-display")).toHaveText(originalQuestion!);
+});
+
 test("keypad submits only with Check, then results save once and replay preserves settings", async ({
   page,
 }) => {
